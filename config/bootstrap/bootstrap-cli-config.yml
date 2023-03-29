@@ -1,4 +1,5 @@
 ---
+
 bootstrap:
   # This is a template bootstrap CLI file that will need to be completed. For a more complete example look at
   # https://github.com/cognitedata/inso-bootstrap-cli/blob/main/configs/config-deploy-example-v2.yml
@@ -21,7 +22,6 @@ bootstrap:
     # naming of Groups, Datasets and RAWDBs only.
     # All given feature values are reflecting the default values,
     # to support a smooth v1 migration.
-    #
     # Recommended values for a new v2-project are given as comments!
 
 
@@ -55,41 +55,53 @@ bootstrap:
     # Mapping between IDP (Azure Active Directory) groups and CDF groups.
     idp-cdf-mappings:
     # Support multiple CDF Projects, like dev/test/prod in one config.
-        - cdf-project: <CDF project name> # i.e. bootcamp-01-test
+        - cdf-project: bartosz-test-project  # i.e. bootcamp-01-test
           mappings:
               - cdf-group: cdf:root
-                idp-source-id: <AAD Group Object id>
-                idp-source-name: <AAD Group name>
+                idp-source-id: 9013bda6-ce4e-4c06-9b97-d7acf746aba8
+                idp-source-name: bartosz-test-project-test-admin
               - cdf-group: cdf:all:owner
-                idp-source-id: <AAD Group Object Id> # for the AAD Group to be matched to cdf-group
-                idp-source-name: <AAD Group name> # i.e. bootcamp-01-test-all-owner
+                idp-source-id: 71b50616-e0c7-40c9-af4f-c1485ac59503  # for the AAD Group to be matched to cdf-group
+                idp-source-name: bartosz-test-project-test-all-owner  # i.e. bootcamp-01-test-all-owner
               - cdf-group: cdf:all:read
-                idp-source-id: <AAD Group Object Id> # for the AAD Group to be matched to cdf-group
-                idp-source-name: <AAD Group name> # i.e. bootcamp-01-test-all-read
+                idp-source-id: dbb67b33-b591-4482-bbf1-cdf34e561942  # for the AAD Group to be matched to cdf-group
+                idp-source-name: bartosz-test-project-test-all-read  # i.e. bootcamp-01-test-all-read
 
 
     namespaces:
         # Typical config will have a namespace for data sources ("src") and a namespace for use cases ("uc")
-        - ns-name: <Namespace name>
-          description: Data sources for the Ice Cream Factory # HINT
+        - ns-name: src
+          description: Sources used for data extraction  # HINT
 
           # Node names will normally follow src:001:srcname or uc:001:usecasename naming convention
           ns-nodes:
-              - node-name: <Node name>
-                description: Data from SAP # HINT
+              - node-name: src:001:sap
+                description: Source 01 data from SAP  # HINT
+              - node-name: src:002:opcua
+                description: Source 02 data from opcua
+
+        - ns-name: uc
+          description: Use cases representing the data/products
+
+          ns-nodes:
+              - node-name: uc:001:oee
+                description: Use case 001 Overall Equipment Effectiveness
+                shared-access:
+                    read:
+                        - node-name: src:001:sap
+                        - node-name: src:002:opcua
+
         # HINT: Add another namespace below
 
 
 # de-facto standards for CDF CogniteClient and logger configuration.
 # Following the same parameter structure as the 'Cognite Python Extractor-Utilities'
 # and 'Cognite DB Extractor' configuration.
-cognite: # kwargs to pass to the CogniteClient, Environment variable format: ${ENVIRONMENT_VARIABLE_NAME}
+cognite:  # kwargs to pass to the CogniteClient, Environment variable format: ${ENVIRONMENT_VARIABLE_NAME}
     # host: https://${BOOTSTRAP_CDF_CLUSTER}.cognitedata.com/
     host: ${BOOTSTRAP_CDF_HOST}
     project: ${BOOTSTRAP_CDF_PROJECT}
-    #
     # AAD IdP login credentials:
-    #
     idp-authentication:
         client-id: ${BOOTSTRAP_IDP_CLIENT_ID}
         secret: ${BOOTSTRAP_IDP_CLIENT_SECRET}
